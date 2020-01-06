@@ -73,7 +73,7 @@ class Keyword:
 class AstrophQuery:
     """ a class to define a query to the arXiv astroph papers """
 
-    def __init__(self, start_date, end_date, max_papers, old_id=None):
+    def __init__(self, start_date, end_date, max_papers, arxiv_channel, old_id=None):
         self.start_date = start_date
         self.end_date = end_date
         self.max_papers = max_papers
@@ -83,14 +83,37 @@ class AstrophQuery:
         self.sort_query = "max_results={}&sortBy=submittedDate&sortOrder=descending".format(
             self.max_papers)
 
-        self.subcat = ["GA", "CO", "EP", "HE", "IM", "SR"]
+        self.arxiv_channel = arxiv_channel
+        self.suffix_dict = {'astro': '-ph.',
+                            'cond': '-mat.',
+                            'gr': '-qc',
+                            'hep': '-',
+                            'math': '-ph',
+                            'nlin': '.',
+                            'physics': '.',
+                            'quant': '-ph'}
+        self.subcat_dict = {'astro': ["GA", "CO", "EP", "HE", "IM", "SR"],
+                            'cond': ["dis-nn", "mtrl-sci", "mes-hall", "other", "quant-gas", "soft", "stat-mech", "str-el", "supr-con"],
+                            'gr': [''],
+                            'hep': ["ex", "lat", "ph", "th"],
+                            'math': [''],
+                            'nlin': ['AO', 'CG', 'CD', 'SI', 'PS'],
+                            'nucl': ['ex', 'th'],
+                            'physics': ['acc-ph', 'app-ph', 'ao-ph', 'atom-ph', 'atm-clus', 'bio-ph', 'chem-ph', 
+                                         'class-ph', 'comp-ph', 'data-an', 'flu-dyn', 'gen-ph', 'geo-ph', 'hist-ph', 'ins-det',
+                                         'med-ph', 'optics', 'ed-ph', 'soc-ph', 'plasm-pd', 'pop-ph', 'space-ph'],
+                            'quant': ['']}
+
+        self.subcat = self.subcat_dict[self.arxiv_channel] 
 
     def get_cat_query(self):
         """ create the category portion of the astro ph query """
 
         cat_query = "%28"  # open parenthesis
         for n, s in enumerate(self.subcat):
-            cat_query += "astro-ph.{}".format(s)
+            #cat_query += "astro-ph.{}".format(s)
+            cat_query += self.arxiv_channel + self.suffix_dict[self.arxiv_channel] + s
+            #print(self.subcat)
             if n < len(self.subcat)-1:
                 cat_query += "+OR+"
             else:
@@ -216,7 +239,7 @@ def report(body, subject, sender, receiver):
         sys.exit("ERROR sending mail")
 
 
-def search_astroph(keywords, old_id=None):
+def search_astroph(keywords, arxiv_channel, old_id=None):
     """ do the actual search though astro-ph by first querying astro-ph
         for the latest papers and then looking for keyword matches"""
 
@@ -232,7 +255,7 @@ def search_astroph(keywords, old_id=None):
     # in descending order if you look at the "pastweek" listing
     # but the submission dates can vary wildly.  It seems that some
     # papers are held for a week or more before appearing.
-    q = AstrophQuery(today - 10*day, today, max_papers, old_id=old_id)
+    q = AstrophQuery(today - 10*day, today, max_papers, arxiv_channel, old_id=old_id)
     print(q.get_url())
 
     papers, last_id = q.do_query(keywords=keywords, old_id=old_id)
@@ -328,8 +351,10 @@ def doit():
     parser.add_argument("--dry_run",
                         help="don't send any mail or slack posts and don't update the marker where we left off",
                         action="store_true")
+    parser.add_argument("--channel", type=str, default="astro-ph.", 
+                        help="Name of arXiv channel that you're searching") 
     args = parser.parse_args()
-
+    
     # get the keywords
     keywords = []
     try:
@@ -385,7 +410,7 @@ def doit():
         old_id = f.readline().rstrip()
         f.close()
 
-    papers, last_id = search_astroph(keywords, old_id=old_id)
+    papers, last_id = search_astroph(keywords, arxiv_channel=args.channel, old_id=old_id)
 
     if not args.dry_run:
         send_email(papers, mail=args.m)
