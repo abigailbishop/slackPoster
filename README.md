@@ -34,7 +34,7 @@ to run `lazy_astroph.py` for each \#papers-\* channel.
    You can also do this from a terminal, but I'll leave those instructions up
    to you to know or find.
 3. Towards the top of the page you will see your username followed by 
-   `_/slackPoster`. Beneath this, you will see a tab for `Code` (which you 
+   `/slackPoster`. Beneath this, you will see a tab for `Code` (which you 
    should be in), and a tab for `Pull requests`. Click this tab. 
    Click the green button to the right `New pull request`. 
    The `base repository` should be your username followed by `/slackPoster`.
