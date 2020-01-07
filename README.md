@@ -4,7 +4,7 @@ This code is essentially copied and pasted from the wonderful Michel Zingale.
 His respository is available here: https://github.com/zingale/lazy-astroph
 
 
-#How it works:
+# How it works:
 
 We have directories for each \#papers-\* channel on our slack. 
 In each directory is a file called `inputs` containing the name of the 
@@ -25,7 +25,7 @@ to run `lazy_astroph.py` for each \#papers-\* channel.
 `run.py` makes the code run everynight at 8pm CDT. 
 
 
-#So you want to adjust the inputs:
+# So you want to adjust the inputs:
 
 1. Fork this repository (you will need to be signed into your GitHub account).
 2. In your fork, enter the inputs file you wish to change, make your edits, then
@@ -51,7 +51,7 @@ to run `lazy_astroph.py` for each \#papers-\* channel.
    their machine and you will see the change reflected. 
 
 
-#Questions:
+# Questions:
 
 If you have any questions about this, you can send a message to 
 Rob Morgan or Abby Bishop on Slack. 
