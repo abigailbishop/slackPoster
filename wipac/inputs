@@ -1,7 +1,9 @@
 #papers-wipac require=2 
 icecube
-cherencov telescope array
+cherenkov telescope array
 neutrino
+gamma ray
+gamma-ray
 multi messenger
 multi-messenger
 flavor
@@ -11,5 +13,9 @@ ANITA
 ARA
 RNO
 Fermi
+MAGIC
+HESS
+H.E.S.S.
+CTA
 TXS
 dark matter
