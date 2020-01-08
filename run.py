@@ -8,6 +8,19 @@ import time
 weekdays, weekends = [6, 0, 1, 2, 3], [4, 5]
 central_time_posting_hour = 20
 
+print('Script started, waiting for the next even hour to continue')
+
+#also delay the script until 00 minutes so that it will start posteing right at 8pm
+while True:
+    current_minute = datetime.datetime.now().minute
+    if current_minute == 0:
+        break
+    else:
+        time.sleep(60)
+
+print("Staring main loop")
+
+#main loop to run forever
 while True:
 
     day_of_week = datetime.datetime.now().weekday()
