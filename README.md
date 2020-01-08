@@ -54,4 +54,4 @@ to run `lazy_astroph.py` for each \#papers-\* channel.
 ## Questions:
 
 If you have any questions about this, you can send a message to 
-Rob Morgan or Abby Bishop on Slack. 
+[Rob Morgan](https://github.com/rmorgan10)) or [Abby Bishop](https://github.com/abigailbishop) on Slack. 
