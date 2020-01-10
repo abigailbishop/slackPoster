@@ -66,10 +66,10 @@ If you have any questions about this, you can send a message to
 1. Click `Your Apps` in the top lefthand corner. 
    If you already have an app you use for this, click this app to open it. 
    Under `Add features and functionality` click `Incoming Webhooks`.
-    2. If you have not already created a paper posting app, click 
+    1. If you have not already created a paper posting app, click 
       `Create an App`. 
-    2. Name it whatever you'd like and assign it to the appropriate workspace.
-    2. Once created, you will be redirected to the apps `Basic Information` page.
+    1. Name it whatever you'd like and assign it to the appropriate workspace.
+    1. Once created, you will be redirected to the apps `Basic Information` page.
       Here you click `Incoming Webhooks` under `Add features and functionality`
       then move the gray slider next to `Activate Webhooks` 
       into the `On` position.   
