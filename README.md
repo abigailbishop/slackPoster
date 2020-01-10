@@ -90,13 +90,13 @@ If you have any questions about this, you can send a message to
    the computer used to run `slackPoster` as the file is ignored by git 
    (since the webhook is a secret link).
 1. Still in this directory create a file titled `inputs`.
-    2. The first line of this file should begin as `\#` followed by 
+    1. The first line of this file should begin as `\#` followed by 
       the name of your new channel. 
       You may also choose to add a space after the channel name followed by
       `requires=2` (or some other number) and this will require at least
       2 words to be in a paper abstract or title, 
       else a given paper will not be reported. 
-    2. All subsequent lines contain one word, each being a keyword you'd like
+    1. All subsequent lines contain one word, each being a keyword you'd like
       to search new arXiv paper titles and abstracts for. 
       You may also choose to add a few spaces after a keyword followed by 
       `NOT: ` followed by a word. 
