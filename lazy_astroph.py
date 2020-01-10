@@ -309,12 +309,20 @@ def slack_post(papers, channel_req, username=None, icon_emoji=None, webhook=None
     # loop by channel
     for c in channel_req:
         channel_body = ""
+        found_urls, unique_papers = [], []
         for p in papers:
+            if p.url in found_urls:
+                continue
+            else:
+                found_urls.append(p.url)
+                unique_papers.append(p)
+        for num, p in enumerate(unique_papers):
             if not p.posted_to_slack:
                 if c in p.channels:
                     if len(p.keywords) >= channel_req[c]:
                         keywds = ", ".join(p.keywords).strip()
-                        channel_body += u"{} [{}]\n\n".format(p, keywds)
+                        channel_body += "{0}. {1}\n\t\t[{3}] - {2}\n".format(num + 1, p.title, p.url, keywds)
+                        #channel_body += u"{} [{}]\n\n".format(p, keywds)
                         p.posted_to_slack = 1
 
         if webhook is None:
@@ -354,6 +362,8 @@ def doit():
     parser.add_argument("--channel", type=str, default="astro-ph.", 
                         help="Name of arXiv channel that you're searching") 
     args = parser.parse_args()
+    
+    directory_name = args.inputs[0][0:-7]
     
     # get the keywords
     keywords = []
@@ -401,7 +411,7 @@ def doit():
 
     # have we done this before? if so, read the .lazy_astroph file to get
     # the id of the paper we left off with
-    param_file = os.path.expanduser("~") + "/.lazy_astroph"
+    param_file = directory_name + "/.lazy_astroph-{}".format(args.channel)
     try:
         f = open(param_file, "r")
     except:

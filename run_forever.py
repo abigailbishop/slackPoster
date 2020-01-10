@@ -26,6 +26,12 @@ while True:
     day_of_week = datetime.datetime.now().weekday()
     current_hour = datetime.datetime.now().hour
 
+    if day_of_week in weekdays and current_hour == central_time_posting_hour - 1:
+        os.system("git fetch --all")
+        os.system("git reset --hard origin/master")
+        os.system("git pull origin master")
+
+
     if day_of_week in weekdays and current_hour == central_time_posting_hour:
 
         #run slackPoster script
