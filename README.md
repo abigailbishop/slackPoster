@@ -22,7 +22,7 @@ abstracts and titles of the latest arXiv papers for them.
 
 `run_slackPoster.py` contains the instructions that allow us 
 to run `lazy_astroph.py` for each \#papers-\* channel. 
-`run.py` makes the code run everynight at 8pm CDT. 
+`run_forever.py` makes the code run everynight at 8pm CDT. 
 
 
 ## So you want to adjust the inputs:
