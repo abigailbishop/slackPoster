@@ -66,10 +66,10 @@ If you have any questions about this, you can send a message to
 1. Click `Your Apps` in the top lefthand corner. 
    If you already have an app you use for this, click this app to open it. 
    Under `Add features and functionality` click `Incoming Webhooks`.
-   2. If you have not already created a paper posting app, click 
+    2. If you have not already created a paper posting app, click 
       `Create an App`. 
-   2. Name it whatever you'd like and assign it to the appropriate workspace.
-   2. Once created, you will be redirected to the apps `Basic Information` page.
+    2. Name it whatever you'd like and assign it to the appropriate workspace.
+    2. Once created, you will be redirected to the apps `Basic Information` page.
       Here you click `Incoming Webhooks` under `Add features and functionality`
       then move the gray slider next to `Activate Webhooks` 
       into the `On` position.   
@@ -90,13 +90,13 @@ If you have any questions about this, you can send a message to
    the computer used to run `slackPoster` as the file is ignored by git 
    (since the webhook is a secret link).
 1. Still in this directory create a file titled `inputs`.
-   2. The first line of this file should begin as `\#` followed by 
+    2. The first line of this file should begin as `\#` followed by 
       the name of your new channel. 
       You may also choose to add a space after the channel name followed by
       `requires=2` (or some other number) and this will require at least
       2 words to be in a paper abstract or title, 
       else a given paper will not be reported. 
-   2. All subsequent lines contain one word, each being a keyword you'd like
+    2. All subsequent lines contain one word, each being a keyword you'd like
       to search new arXiv paper titles and abstracts for. 
       You may also choose to add a few spaces after a keyword followed by 
       `NOT: ` followed by a word. 
