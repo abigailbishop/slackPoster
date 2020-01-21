@@ -1,7 +1,7 @@
 #papers-hep
-lhc              NOT: ALICE
-ATLAS
-CMS
+lhc         MATCHING: unique
+ATLAS       MATCHING: unique
+CMS         MATCHING: unique
 collision
 lepton
 susy

@@ -1,6 +1,6 @@
 #papers-wipac require=2 
 icecube
-cherenkov telescope array
+cherenkov telescope array  MATCHING: unique
 neutrino
 gamma ray
 gamma-ray
@@ -8,14 +8,14 @@ multi messenger
 multi-messenger
 flavor
 blazars
-HAWC
-ANITA
-ARA
-RNO
-Fermi
-MAGIC
+HAWC             MATCHING: unique
+ANITA            MATCHING: unique
+ARA              MATCHING: unique
+RNO              MATCHING: unique
+Fermi            MATCHING: unique
+MAGIC            MATCHING: unique
 HESS
 H.E.S.S.
-CTA
+CTA              MATCHING: unique
 TXS
 dark matter
