@@ -63,7 +63,7 @@ If you have any questions about this, you can send a message to
 
 This tutorial is mostly for anyone who would like to impliment this 
   functionality into another Slack workspace and as a reminder for us. 
-If you would a new channel to be added to the UWM Physics Grad Program Slack,
+If you would like a new channel to be added to the UWM Physics Grad Program Slack,
   please reach out to Rob and Abby on Slack. 
 
 1. On Slack, create the channel. 
@@ -104,10 +104,12 @@ If you would a new channel to be added to the UWM Physics Grad Program Slack,
     1. All subsequent lines contain one word, each being a keyword you'd like
       to search new arXiv paper titles and abstracts for. 
       You may also choose to add a few spaces after a keyword followed by 
-        1.`NOT: ` followed by a series of words separated by commas. 
+        
+        `NOT: ` followed by a series of words separated by commas. 
           `slackPoster` will not report papers containing these words in its
           title or abstract. 
-        1.`MATCHING: unique` to search only for the given keyword, 
+          
+        `MATCHING: unique` to search only for the given keyword, 
           and not for words that happen to contain the keyword too. 
           For example, if you list `nova`, the script will return papers with 
           nova, supernova, etc in their abstracts and titles. 
