@@ -102,12 +102,14 @@ If you would like a new channel to be added to the UWM Physics Grad Program Slac
       2 words to be in a paper abstract or title, 
       else a given paper will not be reported. 
     1. All subsequent lines contain one word, each being a keyword you'd like
-      to search new arXiv paper titles and abstracts for. \n
+      to search new arXiv paper titles and abstracts for. 
       You may also choose to add a few spaces after a keyword followed by 
-        1.`NOT: ` followed by a series of words separated by commas. 
+        
+        `NOT: ` followed by a series of words separated by commas. 
           `slackPoster` will not report papers containing these words in its
-          title or abstract. \n
-        2.`MATCHING: unique` to search only for the given keyword, 
+          title or abstract. 
+          
+        `MATCHING: unique` to search only for the given keyword, 
           and not for words that happen to contain the keyword too. 
           For example, if you list `nova`, the script will return papers with 
           nova, supernova, etc in their abstracts and titles. 
