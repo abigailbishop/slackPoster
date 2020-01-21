@@ -256,7 +256,7 @@ def search_astroph(keywords, arxiv_channel, old_id=None):
     # but the submission dates can vary wildly.  It seems that some
     # papers are held for a week or more before appearing.
     q = AstrophQuery(today - 10*day, today, max_papers, arxiv_channel, old_id=old_id)
-    print(q.get_url())
+    #print(q.get_url())
 
     papers, last_id = q.do_query(keywords=keywords, old_id=old_id)
 
@@ -409,18 +409,31 @@ def doit():
                 keywords.append(Keyword(kw, matching=matching,
                                         channel=channel, excludes=excludes))
 
-    # have we done this before? if so, read the .lazy_astroph file to get
-    # the id of the paper we left off with
-    param_file = directory_name + "/.lazy_astroph-{}".format(args.channel)
-    try:
-        f = open(param_file, "r")
-    except:
-        old_id = None
-    else:
-        old_id = f.readline().rstrip()
-        f.close()
+    # Search though each arXiv channel, save all the papers. 
+    channels_to_search = args.channel.split(',')
+    papers = []
+    last_id = []
 
-    papers, last_id = search_astroph(keywords, arxiv_channel=args.channel, old_id=old_id)
+    for channel_n in range(len(channels_to_search)):
+
+        # have we done this before? if so, read the .lazy_astroph file to get
+        # the id of the paper we left off with
+        param_file = directory_name + "/.lazy_astroph-{}".format(
+                                                  channels_to_search[channel_n])
+        try:
+            f = open(param_file, "r")
+        except:
+            old_id = None
+        else:
+            old_id = f.readline().rstrip()
+            f.close()
+
+        #search the channels
+        papers_tmp, last_id_tmp = search_astroph(keywords, 
+               arxiv_channel=channels_to_search[channel_n], old_id=old_id)
+        for paper in papers_tmp:
+            papers.append(paper)
+        last_id.append([param_file, last_id_tmp])
 
     if not args.dry_run:
         send_email(papers, mail=args.m)
@@ -438,15 +451,15 @@ def doit():
 
         slack_post(papers, channel_req, icon_emoji=args.e, username=args.u, webhook=webhook)
 
-        print("writing param_file", param_file)
-
-        try:
-            f = open(param_file, "w")
-        except:
-            sys.exit("ERROR: unable to open parameter file for writting")
-        else:
-            f.write(last_id)
-            f.close()
+        for ids in last_id:
+            print("writing param_file", ids[0])
+            try:
+                f = open(ids[0], "w")
+            except:
+                sys.exit("ERROR: unable to open parameter file for writting")
+            else:
+                f.write(ids[1])
+                f.close()
     else:
         send_email(papers, mail=None)
 
