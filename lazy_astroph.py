@@ -316,12 +316,14 @@ def slack_post(papers, channel_req, username=None, icon_emoji=None, webhook=None
             else:
                 found_urls.append(p.url)
                 unique_papers.append(p)
-        for num, p in enumerate(unique_papers):
+        num = 0
+        for p in unique_papers:
             if not p.posted_to_slack:
                 if c in p.channels:
                     if len(p.keywords) >= channel_req[c]:
+                        num += 1
                         keywds = ", ".join(p.keywords).strip()
-                        channel_body += "{0}. {1}\n\t\t[{3}] - {2}\n".format(num + 1, p.title, p.url, keywds)
+                        channel_body += "{0}. {1}\n\t\t[{3}] - {2}\n".format(num, p.title, p.url, keywds)
                         #channel_body += u"{} [{}]\n\n".format(p, keywds)
                         p.posted_to_slack = 1
 
