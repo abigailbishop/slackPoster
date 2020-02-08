@@ -361,7 +361,7 @@ def doit():
     parser.add_argument("--dry_run",
                         help="don't send any mail or slack posts and don't update the marker where we left off",
                         action="store_true")
-    parser.add_argument("--channel", type=str, default="astro-ph.", 
+    parser.add_argument("--channel", type=str, default="astro", 
                         help="Name of arXiv channel that you're searching") 
     args = parser.parse_args()
     
@@ -456,7 +456,7 @@ def doit():
         for ids in last_id:
             print("writing param_file", ids[0])
             try:
-                f = open(ids[0], "w")
+                f = open(ids[0], "w+")
             except:
                 sys.exit("ERROR: unable to open parameter file for writting")
             else:
