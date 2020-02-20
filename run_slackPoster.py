@@ -1,6 +1,10 @@
+#!/usr/bin/env python3
+
 # Main code to search the arXiv for new articles
 
 import os
+
+os.chdir('/afs/hep.wisc.edu/home/ramorgan2/slackPoster')
 
 
 main_dict = {'astro': 'astro,physics',
