@@ -21,6 +21,6 @@ for name, channels in main_dict.items():
 
      print(name)
       
-     os.system('./lazy_astroph.py -w {0}/webhook --channel {1} {0}/inputs'.format(name, channels))
-     #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs'.format(name, channels))
+     os.system('./lazy_astroph.py -w {0}/webhook --channel {1} {0}/inputs &>> run_slackPoster.log'.format(name, channels))
+     #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs &>> run_slackPoster.log'.format(name, channels))
         
