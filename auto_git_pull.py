@@ -6,7 +6,7 @@ import os
 
 os.chdir('/afs/hep.wisc.edu/home/ramorgan2/slackPoster')
 
-os.system("git fetch --all")
-os.system("git reset --hard origin/master")
-os.system("git pull origin master")
+os.system("git fetch --all &>> auto_git_pull.log")
+os.system("git reset --hard origin/master &>> auto_git_pull.log")
+os.system("git pull origin master &>> auto_git_pull.log")
 
