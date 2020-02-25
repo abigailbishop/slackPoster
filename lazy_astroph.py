@@ -466,4 +466,5 @@ def doit():
         send_email(papers, mail=None)
 
 if __name__ == "__main__":
+    print(dt.datetime.now())
     doit()
