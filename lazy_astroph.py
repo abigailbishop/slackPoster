@@ -177,7 +177,7 @@ class AstrophQuery:
             # so we keep looking through the entire list of returned
             # results.
             if old_id is not None:
-                if arxiv_id < old_id:
+                if arxiv_id <= old_id:
                     continue
 
             # link
@@ -433,6 +433,7 @@ def doit():
         #search the channels
         papers_tmp, last_id_tmp = search_astroph(keywords, 
                arxiv_channel=channels_to_search[channel_n], old_id=old_id)
+        print("doit last_id_tmp", last_id_tmp)
         for paper in papers_tmp:
             papers.append(paper)
         last_id.append([param_file, last_id_tmp])
