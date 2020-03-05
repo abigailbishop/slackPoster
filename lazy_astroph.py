@@ -138,6 +138,8 @@ class AstrophQuery:
 
         full_query = "search_query={}+AND+{}&{}".format(cat_query, range_query, self.sort_query)
 
+        print(self.base_url + full_query)
+
         return self.base_url + full_query
 
     def do_query(self, keywords=None, old_id=None):
@@ -165,6 +167,8 @@ class AstrophQuery:
 
             arxiv_id = e.id.split("/abs/")[-1]
             title = e.title.replace("\n", " ")
+
+            print(arxiv_id)
 
             # the papers are sorted now such that the first is the
             # most recent -- we want to store this id, so the next
@@ -348,7 +352,7 @@ def doit():
     # parse runtime parameters
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-m", help="e-mail address to send report to",
+    parser.add_argument("-m", help="e-mail address to send report to. Use comma-separated list for multiple.",
                         type=str, default=None)
     parser.add_argument("inputs", help="inputs file containing keywords",
                         type=str, nargs=1)
@@ -439,7 +443,10 @@ def doit():
         last_id.append([param_file, last_id_tmp])
 
     if not args.dry_run:
-        send_email(papers, mail=args.m)
+        if args.m:
+            email_addresses = args.m.split(',')
+            for email_address in email_addresses:
+                send_email(papers, mail=email_address.strip())
 
         if not args.w is None:
             try:
