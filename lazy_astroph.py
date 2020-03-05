@@ -228,6 +228,24 @@ class AstrophQuery:
         return results, latest_id
 
 
+def send_all_emails(papers, mail):
+    """ 
+    Handle a list of emails, or single email, or null argument. Then trigger
+    slackPoster's send_email function.
+    
+    :param papers: list of paper objects returned by search_astroph
+    :param mail: comma-separated list of email addresses OR
+                 single email address OR
+                 None if no addresses to send mail to
+    """
+    if mail:
+        email_addresses = mail.split(',')
+        for email_address in email_addresses:
+            send_email(papers, mail=email_address.strip())
+
+    return
+
+
 def report(body, subject, sender, receiver):
     """ send an email """
 
@@ -443,10 +461,7 @@ def doit():
         last_id.append([param_file, last_id_tmp])
 
     if not args.dry_run:
-        if args.m:
-            email_addresses = args.m.split(',')
-            for email_address in email_addresses:
-                send_email(papers, mail=email_address.strip())
+        send_all_emails(papers, args.m)
 
         if not args.w is None:
             try:
@@ -471,7 +486,7 @@ def doit():
                 f.write(ids[1])
                 f.close()
     else:
-        send_email(papers, mail=None)
+        send_all_emails(papers, mail=None)
 
 if __name__ == "__main__":
     print(dt.datetime.now())
