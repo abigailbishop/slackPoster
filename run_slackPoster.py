@@ -13,20 +13,22 @@ main_dict = {'astro': 'astro,physics',
              'condmat': 'cond,quant,physics',
              'plasma': 'physics'}
 
+# read from gitignored-email file to get addresses
+with open('emails.txt', 'r') as emails:
+     email_addresses = ','.join(emails.readlines())
 
 for name, channels in main_dict.items():
-    
 
      print(name)
 
      # For production
-     os.system('./lazy_astroph.py -w {0}/webhook --channel {1} {0}/inputs'.format(name, channels))
+     os.system('./lazy_astroph.py -w {0}/webhook --channel {1} {0}/inputs -m {2}'.format(name, channels, email_addresses))
 
      # For testing on personal slack channel
      #os.system('./lazy_astroph.py -w my_webhook --channel {1} {0}/inputs'.format(name, channels))
      
      # For running without updating param files or posting to Slack
-     #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs &>> run_slackPoster.log'.format(name, channels))
+     #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs'.format(name, channels))
      
      # Uncomment if testing
      #break
