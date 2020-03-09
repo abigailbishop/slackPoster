@@ -309,6 +309,42 @@ def send_email(papers, mail=None):
         else:
             print(body)
 
+def backup_plan(string):
+    """
+    try string as a command 15 times, if fails send an email and give up
+    exit lazy_astroph if fail so that param files are not updated
+
+    :param string: a command to be run
+    """
+
+    # run 15 times or until it works
+    counter = 0
+    while counter < 15:
+        counter += 1
+        stdout0, stderr0, rc = run(string)
+
+        if int(rc) == 0: 
+            break
+            
+        time.sleep(120)
+    
+    # if it worked, we're done
+    if int(rc) == 0: return
+
+    # othewrwise, give up so param files don't write, but email us first
+    body = "Broken, I am. Save me, you must.\n\n" + str(stdout0) 
+    body += '\n' + str(stderr0) + '\n' + "Error Code: " + str(rc) 
+    
+    with open('emails.txt', 'r') as emails:
+        email_addresses = [x.strip() for x in emails.readlines()]
+    
+    for mail in email_addresses:
+        report(body, ":'(", "lazy-astroph@{}".format(platform.node()), mail)
+
+    sys.exit()
+
+    return
+
 
 def run(string):
     """ run a UNIX command """
@@ -362,7 +398,7 @@ def slack_post(papers, channel_req, username=None, icon_emoji=None, webhook=None
         payload["text"] = channel_body
 
         cmd = "curl -X POST --data-urlencode 'payload={}' {}".format(json.dumps(payload), webhook)
-        run(cmd)
+        backup_plan(cmd)
 
 def doit():
     """ the main driver for the lazy-astroph script """
