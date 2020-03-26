@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # A collection of web parsers for different urls
 
 import datetime
