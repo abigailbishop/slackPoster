@@ -222,6 +222,13 @@ class AstrophQuery:
                         keys_matched.append(k.name)
                         channels.append(k.channel)
 
+                elif k.matching == "case":
+                    qa = [l.strip('\":.,!?') for l in abstract.split()]
+                    qt = [l.strip('\":.,!?') for l in title.split()]
+                    if k.name in qa + qt:
+                        keys_matched.append(k.name)
+                        channels.append(k.channel)
+
             if keys_matched:
                 results.append(Paper(arxiv_id, title, url, keys_matched, channels))
 
