@@ -1,4 +1,4 @@
-#papers-plasma
+#papers-plasma require=2 
 turbulence
 flow shear
 transport
@@ -9,5 +9,20 @@ spectral transfer
 damped mode
 turbulence saturation
 dissipation range
-fusion
-
+fusion MATCHING: unique
+ITG MATCHING: unique
+ETG MATCHING: unique
+KBM MATCHING: unique
+TAE MATCHING: unique
+ITER MATCHING: unique
+W7X MATCHING: unique
+HSX MATCHING: unique
+MST MATCHING: unique
+stellarator
+tokamak
+magnetic Reynolds number
+magnetic Prandtl number
+Lundquist number
+magnetic reconnection
+gyrokinetics
+flux tube
