@@ -9,3 +9,5 @@ nohup.out
 *.log
 
 emails.txt
+
+PD_events/__pycache__/
