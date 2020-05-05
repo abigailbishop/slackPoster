@@ -91,7 +91,7 @@ class UWMCareerDev():
         try:
             response = requests.get(url)
         except:
-            return
+            return []
 
         soup = BeautifulSoup(response.text, "html.parser")
 
@@ -212,7 +212,7 @@ class PGSCProfDev():
         try:
             response = requests.get(url)
         except:
-            return
+            return []
 
         soup = BeautifulSoup(response.text, "html.parser")
 

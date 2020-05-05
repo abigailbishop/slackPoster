@@ -9,7 +9,7 @@ events = []
 for parser in [UWMCareerDev(),PGSCProfDev()]:
      #loop over urls
     for url in parser.urls:
-        events+= parser.get_events(url)
+        events += parser.get_events(url)
           
 startnum = 1
 #for all events
