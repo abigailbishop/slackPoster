@@ -101,7 +101,7 @@ class AstrophQuery:
                             'nucl': ['ex', 'th'],
                             'physics': ['acc-ph', 'app-ph', 'ao-ph', 'atom-ph', 'atm-clus', 'bio-ph', 'chem-ph', 
                                          'class-ph', 'comp-ph', 'data-an', 'flu-dyn', 'gen-ph', 'geo-ph', 'hist-ph', 'ins-det',
-                                         'med-ph', 'optics', 'ed-ph', 'soc-ph', 'plasm-pd', 'pop-ph', 'space-ph'],
+                                         'med-ph', 'optics', 'ed-ph', 'soc-ph', 'plasm-ph', 'pop-ph', 'space-ph'],
                             'quant': ['']}
 
         self.subcat = self.subcat_dict[self.arxiv_channel] 
@@ -502,6 +502,8 @@ def doit():
         for paper in papers_tmp:
             papers.append(paper)
         last_id.append([param_file, last_id_tmp])
+
+    print([x.keywords for x in papers])
 
     if not args.dry_run:
         send_all_emails(papers, args.m)
