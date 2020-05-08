@@ -11,7 +11,7 @@ main_dict = {'astro': 'astro,physics',
              'amo': 'physics',
              'biophysics' : 'physics',
              'condmat': 'cond,quant,physics',
-             'plasma': 'physics'}
+             'plasma': 'physics,astro'}
 
 # read from gitignored-email file to get addresses
 with open('emails.txt', 'r') as emails:
