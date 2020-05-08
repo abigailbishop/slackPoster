@@ -18,11 +18,11 @@ ITER MATCHING: unique
 W7X MATCHING: unique
 HSX MATCHING: unique
 MST MATCHING: unique
-JET MATCHING: case
+JET MATCHING: unique
 stellarator
 tokamak
-magnetic Reynolds number
-magnetic Prandtl number
+Reynolds number
+Prandtl number
 Lundquist number
 magnetic reconnection
 gyrokinetics
