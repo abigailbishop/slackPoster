@@ -11,3 +11,5 @@ nohup.out
 emails.txt
 
 PD_events/__pycache__/
+
+fave_authors.txt
