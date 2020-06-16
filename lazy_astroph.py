@@ -142,7 +142,7 @@ class AstrophQuery:
 
         return self.base_url + full_query
 
-    def do_query(self, keywords=None, old_id=None):
+    def do_query(self, fave_authors, keywords=None, old_id=None):
         """ perform the actual query """
 
         # note, in python3 this will be bytes not str
@@ -162,6 +162,8 @@ class AstrophQuery:
         results = []
 
         latest_id = None
+
+        triggered_authors = {}     # Collect papers with authors we like
 
         for e in feed.entries:
 
@@ -190,6 +192,15 @@ class AstrophQuery:
                     url = l.href
 
             abstract = e.summary
+
+            # Look for specific authors
+            contributors = e.contributors
+            for c in contributors: 
+                if c['name'].lower() in fave_authors.keys(): 
+                    if url in triggered_authors.keys():
+                        triggered_authors[url].append(c['name'].lower())
+                    else: 
+                        triggered_authors[url] = [c['name'].lower()]
 
             # any keyword matches?
             # we do two types of matches here.  If the keyword tuple has the "any"
@@ -232,7 +243,7 @@ class AstrophQuery:
             if keys_matched:
                 results.append(Paper(arxiv_id, title, url, keys_matched, channels))
 
-        return results, latest_id
+        return results, latest_id, triggered_authors
 
 
 def send_all_emails(papers, mail):
@@ -268,7 +279,7 @@ def report(body, subject, sender, receiver):
         sys.exit("ERROR sending mail")
 
 
-def search_astroph(keywords, arxiv_channel, old_id=None):
+def search_astroph(keywords, fave_authors, arxiv_channel, old_id=None):
     """ do the actual search though astro-ph by first querying astro-ph
         for the latest papers and then looking for keyword matches"""
 
@@ -287,11 +298,12 @@ def search_astroph(keywords, arxiv_channel, old_id=None):
     q = AstrophQuery(today - 10*day, today, max_papers, arxiv_channel, old_id=old_id)
     #print(q.get_url())
 
-    papers, last_id = q.do_query(keywords=keywords, old_id=old_id)
+    papers, last_id, authors = q.do_query(fave_authors, 
+                                          keywords=keywords, old_id=old_id)
 
     papers.sort(reverse=True)
 
-    return papers, last_id
+    return papers, last_id, authors
 
 
 def send_email(papers, mail=None):
@@ -368,7 +380,8 @@ def run(string):
     return stdout0, stderr0, rc
 
 
-def slack_post(papers, channel_req, username=None, icon_emoji=None, webhook=None):
+def slack_post(papers, channel_req, authors, fave_authors, 
+                    username=None, icon_emoji=None, webhook=None):
     """ post the information to a slack channel """
 
     # loop by channel
@@ -385,12 +398,24 @@ def slack_post(papers, channel_req, username=None, icon_emoji=None, webhook=None
         for p in unique_papers:
             if not p.posted_to_slack:
                 if c in p.channels:
+                    if p.url in authors.keys():
+                        channel_body += ("\n"
+"*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*\n")
                     if len(p.keywords) >= channel_req[c]:
                         num += 1
                         keywds = ", ".join(p.keywords).strip()
-                        channel_body += "{0}. {1}\n\t\t[{3}] - {2}\n".format(num, p.title, p.url, keywds)
+                        channel_body += "{0}. {1}\n\t\t[{3}] - {2}\n".format(
+                                                   num, p.title, p.url, keywds)
                         #channel_body += u"{} [{}]\n\n".format(p, keywds)
                         p.posted_to_slack = 1
+                    if p.url in authors.keys():
+                        for peep in authors[p.url]: 
+                            channel_body += ("\n\t\t:point_up::star-struck: "
+                            "*Congrats <{}> on your paper!!*".format(
+                                                       fave_authors[peep]))
+                            channel_body += ":tada::sparkles:\n"
+                        channel_body += ("\n"
+"*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*\n")
 
         if webhook is None:
             print("channel: {}".format(c))
@@ -481,6 +506,16 @@ def doit():
     papers = []
     last_id = []
 
+    # Load in file of selected authors we like to support
+    fave_authors = {}
+    author_file = "fave_authors.txt"
+    with open(author_file, 'r') as f:
+        for line in f: 
+            line = line.strip()
+            key = line.split(';')[0].lower()
+            value = line.split(';')[1]
+            fave_authors[key] = value
+
     for channel_n in range(len(channels_to_search)):
 
         # have we done this before? if so, read the .lazy_astroph file to get
@@ -496,7 +531,7 @@ def doit():
             f.close()
 
         #search the channels
-        papers_tmp, last_id_tmp = search_astroph(keywords, 
+        papers_tmp, last_id_tmp, authors = search_astroph(keywords,fave_authors,
                arxiv_channel=channels_to_search[channel_n], old_id=old_id)
         print("doit last_id_tmp", last_id_tmp)
         for paper in papers_tmp:
@@ -519,7 +554,9 @@ def doit():
         else:
             webhook = None
 
-        slack_post(papers, channel_req, icon_emoji=args.e, username=args.u, webhook=webhook)
+        slack_post(papers, channel_req, authors, fave_authors, 
+                    icon_emoji=args.e, 
+                    username=args.u, webhook=webhook)
 
         for ids in last_id:
             print("writing param_file", ids[0])
