@@ -516,6 +516,7 @@ def doit():
             value = line.split(';')[1]
             fave_authors[key] = value
 
+    all_authors = {}
     for channel_n in range(len(channels_to_search)):
 
         # have we done this before? if so, read the .lazy_astroph file to get
@@ -533,6 +534,9 @@ def doit():
         #search the channels
         papers_tmp, last_id_tmp, authors = search_astroph(keywords,fave_authors,
                arxiv_channel=channels_to_search[channel_n], old_id=old_id)
+        for k, v in authors.items():
+            all_authors[k] = v
+
         print("doit last_id_tmp", last_id_tmp)
         for paper in papers_tmp:
             papers.append(paper)
@@ -554,7 +558,7 @@ def doit():
         else:
             webhook = None
 
-        slack_post(papers, channel_req, authors, fave_authors, 
+        slack_post(papers, channel_req, all_authors, fave_authors, 
                     icon_emoji=args.e, 
                     username=args.u, webhook=webhook)
 
