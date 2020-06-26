@@ -25,7 +25,8 @@ for name, channels in main_dict.items():
      os.system('./lazy_astroph.py -w {0}/webhook --channel {1} {0}/inputs'.format(name, channels))
 
      # For testing on personal slack channel
-     #os.system('./lazy_astroph.py -w my_webhook --channel {1} {0}/inputs -m {2}'.format(name, channels, email_addresses))
+     #os.system('./lazy_astroph.py -w test_webhook --channel {1} {0}/inputs -m {2}'.format(name, channels, email_addresses))
+     #os.system('./lazy_astroph.py -w test_webhook --channel {1} {0}/inputs'.format(name, channels))
      
      # For running without updating param files or posting to Slack
      #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs'.format(name, channels))
