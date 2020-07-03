@@ -197,10 +197,16 @@ class AstrophQuery:
             contributors = e.contributors
             for c in contributors: 
                 if c['name'].lower() in fave_authors.keys(): 
+                    # This removes duplicate tagged authors
+                    # This doesn't work if we have two dept members w/same name
                     if url in triggered_authors.keys():
-                        triggered_authors[url].append(c['name'].lower())
+                        try:
+                            g = triggered_authors[url].index(c['name'].lower())
+                        except:
+                             triggered_authors[url].append(c['name'].lower())
                     else: 
                         triggered_authors[url] = [c['name'].lower()]
+
 
             # any keyword matches?
             # we do two types of matches here.  If the keyword tuple has the "any"
@@ -397,7 +403,7 @@ def slack_post(papers, channel_req, authors, fave_authors,
         num = 0
         for p in unique_papers:
             if not p.posted_to_slack:
-                if c in p.channels:
+                if (c in p.channels) and (len(p.keywords) >= channel_req[c]):
                     if p.url in authors.keys():
                         channel_body += ("\n"
 "*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*\n")
