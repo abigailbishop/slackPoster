@@ -1,4 +1,4 @@
-#papers-wipac require=2 
+#papers-wipac require=2
 icecube
 cherenkov telescope array  MATCHING: unique
 neutrino
@@ -19,3 +19,4 @@ H.E.S.S.
 CTA              MATCHING: unique
 TXS
 dark matter
+cosmic-ray
