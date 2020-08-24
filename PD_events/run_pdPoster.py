@@ -6,7 +6,7 @@ with open('webhook', 'r') as webhook_file:
 
 events = []
 #loop over parsers
-for parser in [UWMCareerDev(),PGSCProfDev()]:
+for parser in [UWMCareerDev(), PGSCProfDev(), NOGS()]:
      #loop over urls
     for url in parser.urls:
         events += parser.get_events(url)
