@@ -281,6 +281,92 @@ class PGSCProfDev():
  
         return start, end
 
+class NOGS():
+    """Parses Events from the NOGS website """
+    def __init__(self):
+
+        #set urls
+        self.urls = ["https://rmorgan10.github.io/NOGS/"]
+
+        return
+
+    def get_events(self, url):
+        """
+        Return all the events from a webpage
+
+        :param url: the url to be parsed
+        :return: :
+        """
+        try:
+            response = requests.get(url)
+        except:
+            return []
+
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        #titles = [x for x in soup.findAll('h3') if str(x)[11:22] == 'event-title']
+        output = [x.string for x in soup.findAll('td')]
+        raw_dates = [output[i] for i in range(0, len(output), 4)]
+        times = [output[i] for i in range(1, len(output), 4)]
+        titles = ["NOGS"]*len(times)
+        speakers = [output[i] for i in range(2, len(output), 4)]
+        talk_titles = [output[i] for i in range(3, len(output), 4)]
+        subtitles = [f"{s} - {t}" for s, t in zip(speakers, talk_titles)]
+        start_dates = []
+        end_dates = []
+        for raw_date, time in zip(raw_dates, times):
+            start_date, end_date = self.parse_date(raw_date, time)
+            start_dates.append(start_date)
+            end_dates.append(end_date)
+            
+        links = self.urls*len(titles)
+
+        if len(np.unique(
+                    [len(x) for x in [titles, subtitles, links, start_dates, end_dates]])) != 1:
+
+            body = "{}\n".format(
+                           [len(x) for x in [titles, subtitles, links, start_dates, end_dates]])
+
+            with open('../emails.txt', 'r') as emails:
+                email_addresses = [x.strip() for x in emails.readlines()]
+
+            for mail in email_addresses:
+                report(body, ":'(", 
+                              "PD-poster@{}".format(platform.node()), mail)
+
+        events = []
+        for title, subtitle, start_date, end_date, link in zip(
+                                     titles, subtitles, start_dates, end_dates, links):
+            events.append(Event(title, subtitle, 
+                                 start_date, end_date, link))
+            
+        return events
+
+    def parse_date(self, date: str, time: str):
+        # Input: date = 'August 18, 2020', time = '2:30pm'
+        
+        if time == "TBD":
+            return datetime.datetime(3000, 3, 3), datetime.datetime(3000, 3, 3) 
+
+        rawDate = date.strip().split(' ')
+
+        day = rawDate[1][:-1]
+        month = rawDate[0].lower()
+        month = month_map(month)
+        year = rawDate[2]
+        rawTime = time.strip()
+        start_hour = int(rawTime.split(':')[0])
+        start_min = rawTime.split(':')[1][:2]
+        start_ampm = rawTime.split(':')[1][2:]
+
+        if start_ampm == 'pm' and start_hour != 12: start_hour += 12
+
+        start = datetime.datetime(int(year), month, int(day), 
+                                     start_hour, int(start_min))
+        end = start + datetime.timedelta(minutes=30)
+ 
+        return start, end
+
 def report(body, subject, sender, receiver):
     """ send an email """
 
