@@ -11,6 +11,8 @@ import shlex
 import smtplib
 import subprocess
 import sys
+import time
+import traceback
 from email.mime.text import MIMEText
 
 import feedparser
@@ -69,6 +71,7 @@ class Keyword:
         return "{}: matching={}, channel={}, NOTs={}".format(
             self.name, self.matching, self.channel, self.excludes)
 
+class CompletionError(Exception): pass
 
 class AstrophQuery:
     """ a class to define a query to the arXiv astroph papers """
@@ -147,23 +150,24 @@ class AstrophQuery:
 
         # note, in python3 this will be bytes not str
         try:
-            assert False
             response = urlopen(self.get_url()).read()
         except:
             # Get email addresses
             with open('emails.txt', 'r') as emails:
-                email_addresses = ','.join([x.strip() for x in emails.readlines()])
+                email_addresses = [x.strip() for x in emails.readlines()]
             
             # Compose Traceback
             body = "I failed on " + args.w.split('/')[0] + ' : ' + self.arxiv_channel
             body +="\n\n"
-            body += sys.exc_info()[0]
+            body += traceback.format_exc()
             
             # Send emails
             for email_add in email_addresses:
                 report(body, "Paper Poster FAILED",
                        "lazy-astroph@{}".format(platform.node()), email_add)
             
+            raise CompletionError
+
         response = response.replace(b"author", b"contributor")
 
         # this feedparser magic comes from the example of Julius Lucks / Andrea Zonca
@@ -321,8 +325,16 @@ def search_astroph(keywords, fave_authors, arxiv_channel, old_id=None):
     q = AstrophQuery(today - 10*day, today, max_papers, arxiv_channel, old_id=old_id)
     #print(q.get_url())
 
-    papers, last_id, authors = q.do_query(fave_authors, 
-                                          keywords=keywords, old_id=old_id)
+    try:
+        papers, last_id, authors = q.do_query(fave_authors, 
+                                              keywords=keywords, old_id=old_id)
+    except CompletionError:
+        time.sleep(5)
+        try:
+            papers, last_id, authors = q.do_query(fave_authors,
+                                                  keywords=keywords, old_id=old_id)
+        except CompletionError:
+            sys.exit()
 
     papers.sort(reverse=True)
 
