@@ -146,7 +146,24 @@ class AstrophQuery:
         """ perform the actual query """
 
         # note, in python3 this will be bytes not str
-        response = urlopen(self.get_url()).read()
+        try:
+            assert False
+            response = urlopen(self.get_url()).read()
+        except:
+            # Get email addresses
+            with open('emails.txt', 'r') as emails:
+                email_addresses = ','.join([x.strip() for x in emails.readlines()])
+            
+            # Compose Traceback
+            body = "I failed on " + args.w.split('/')[0] + ' : ' + self.arxiv_channel
+            body +="\n\n"
+            body += sys.exc_info()[0]
+            
+            # Send emails
+            for email_add in email_addresses:
+                report(body, "Paper Poster FAILED",
+                       "lazy-astroph@{}".format(platform.node()), email_add)
+            
         response = response.replace(b"author", b"contributor")
 
         # this feedparser magic comes from the example of Julius Lucks / Andrea Zonca
@@ -459,6 +476,7 @@ def doit():
                         action="store_true")
     parser.add_argument("--channel", type=str, default="astro", 
                         help="Name of arXiv channel that you're searching") 
+    global args 
     args = parser.parse_args()
     
     directory_name = args.inputs[0][0:-7]
