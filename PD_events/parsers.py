@@ -96,6 +96,7 @@ class UWMCareerDev():
         soup = BeautifulSoup(response.text, "html.parser")
 
         titles = [x for x in soup.findAll('h3') if str(x)[11:22] == 'event-title']
+
         subtitles = []
         for title in titles:
             if title.find_next_sibling().string is None:
@@ -119,10 +120,15 @@ class UWMCareerDev():
                               "PD-poster@{}".format(platform.node()), mail)
 
         events = []
+
+        # Kill all '
+        titles = [x.string.replace("'", "") for x in titles]
+        subtitles = [x.replace("'", "") for x in subtitles]
+
         for title, subtitle, date, link in zip(titles, subtitles, dates, links):
             try:
                 start_date, end_date = self.parse_date(date)
-                events.append(Event(title.string, subtitle, start_date, end_date, link))
+                events.append(Event(title, subtitle, start_date, end_date, link))
             except:
                 continue
             
