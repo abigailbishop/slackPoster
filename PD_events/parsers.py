@@ -287,12 +287,12 @@ class PGSCProfDev():
  
         return start, end
 
-class NOGS():
-    """Parses Events from the NOGS website """
+class FROGS():
+    """Parses Events from the FROGS website """
     def __init__(self):
 
         #set urls
-        self.urls = ["https://rmorgan10.github.io/NOGS/"]
+        self.urls = ["https://rmorgan10.github.io/FROGS/"]
 
         return
 
