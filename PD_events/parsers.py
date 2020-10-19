@@ -314,7 +314,7 @@ class FROGS():
         output = [x.string for x in soup.findAll('td')]
         raw_dates = [output[i] for i in range(0, len(output), 4)]
         times = [output[i] for i in range(1, len(output), 4)]
-        titles = ["NOGS"]*len(times)
+        titles = ["FROGS"]*len(times)
         speakers = [output[i] for i in range(2, len(output), 4)]
         talk_titles = [output[i] for i in range(3, len(output), 4)]
         subtitles = [f"{s} - {t}" for s, t in zip(speakers, talk_titles)]
