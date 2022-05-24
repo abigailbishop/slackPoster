@@ -24,6 +24,8 @@ abstracts and titles of the latest arXiv papers for them.
 to run `lazy_astroph.py` for each \#papers-\* channel. 
 `run_forever.py` makes the code run everynight at 8pm CDT. 
 
+This works with feedparser version 5.2.1
+
 
 ## So you want to adjust the inputs:
 
