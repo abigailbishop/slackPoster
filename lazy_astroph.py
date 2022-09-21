@@ -191,7 +191,7 @@ class AstrophQuery:
             arxiv_id = e.id.split("/abs/")[-1]
             title = e.title.replace("\n", " ")
 
-            print(arxiv_id)
+            #print(arxiv_id)  # prints literally every arxiv_id in query, good for debugging
 
             # the papers are sorted now such that the first is the
             # most recent -- we want to store this id, so the next
