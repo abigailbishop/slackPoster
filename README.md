@@ -22,51 +22,23 @@ abstracts and titles of the latest arXiv papers for them.
 
 `run_slackPoster.py` contains the instructions that allows us 
 to run `lazy_astroph.py` for each \#papers-\* channel. 
-`run_forever.py` makes the code run everynight at 8pm CDT. 
 
 This works with feedparser version 5.2.1
 
 
-## So you want to adjust the inputs:
-
-1. Fork this repository (you will need to be signed into your GitHub account).
-2. In your fork, enter the inputs file you wish to change, make your edits, then
-   commit the changes to the master branch of your fork 
-   (green button at the bottom of the page). 
-   You can also do this from a terminal, but I'll leave those instructions up
-   to you to know or find.
-3. Towards the top of the page you will see your username followed by 
-   `/slackPoster`. Beneath this, you will see a tab for `Code` (which you 
-   should be in), and a tab for `Pull requests`. Click this tab. 
-   Click the green button to the right: `New pull request`. 
-   The `base repository` should be your username followed by `/slackPoster`.
-   The `base` should be `master`. 
-   The `head repository` should be `abigailbishop/slackPoster`.
-   The `compare` should be `master`.
-   Once this is set you should be able to click `Create Pull Request`. 
-   Note: If you fork the repository and some time passes, you may need to do 
-   the pull request in reverse first to update your fork. 
-   Otherwise, the pull request may yell at you. 
-4. Once your pull request is submitted, one of the `slackPoster` collaborators
-   will review the change and add it to the code. 
-   If your change is approved before 6:55pm, 
-   you should see it reflected that night. 
-   Otherwise, it will take effect the following day. 
-
 ## Questions:
 
 If you have any questions about this, you can send a message to 
-[Rob Morgan](https://github.com/rmorgan10) or 
-[Abby Bishop](https://github.com/abigailbishop) on Slack. 
-
+[Rob Morgan](https://github.com/rmorgan10) or
+[Abby Bishop](https://github.com/abigailbishop). 
 
 
 ## To Create a New Channel:
 
-This tutorial is mostly for anyone who would like to impliment this 
+This tutorial is for anyone who would like to impliment this 
   functionality into another Slack workspace and as a reminder for us. 
-If you would like a new channel to be added to the UWM Physics Grad Program Slack,
-  please reach out to Rob and Abby on Slack. 
+If you would like a new channel to be added to the UWMadison PGSC Slack,
+  please reach out to Abby on Slack. 
 
 1. On Slack, create the channel. 
 1. Log into your workspace on [api.slack.com](https://api.slack.com).
@@ -126,3 +98,31 @@ If you would like a new channel to be added to the UWM Physics Grad Program Slac
    The available options are 
    `astro`, `cond`, `gr`, `hep`, `math`, `nlin`, `physics`, and `quant`.
 1. Once you do this, you should be good to go!
+
+
+
+## So you want to adjust the inputs:
+
+1. Fork this repository (you will need to be signed into your GitHub account).
+2. In your fork, enter the inputs file you wish to change, make your edits, then
+   commit the changes to the main branch of your fork 
+   (green button at the bottom of the page). 
+   You can also do this from a terminal, but I'll leave those instructions up
+   to you to know or find.
+3. Towards the top of the page you will see your username followed by 
+   `/slackPoster`. Beneath this, you will see a tab for `Code` (which you 
+   should be in), and a tab for `Pull requests`. Click this tab. 
+   Click the green button to the right: `New pull request`. 
+   The `base repository` should be your username followed by `/slackPoster`.
+   The `base` should be `main`. 
+   The `head repository` should be `abigailbishop/slackPoster`.
+   The `compare` should be `main`.
+   Once this is set you should be able to click `Create Pull Request`. 
+   Note: If you fork the repository and some time passes, you may need to do 
+   the pull request in reverse first to update your fork. 
+   Otherwise, the pull request may announce conflicts. 
+4. Once your pull request is submitted, one of the `slackPoster` collaborators
+   will review the change and add it to the code. 
+   If your change is approved before 7:55am, 
+   you should see it reflected that night. 
+   Otherwise, it will take effect the following day. 
