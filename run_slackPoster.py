@@ -6,6 +6,7 @@ import os
 
 
 main_dict = {
+             'ara': 'astro,physics',
 }
 
 # read from gitignored-email file to get addresses
