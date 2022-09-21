@@ -268,7 +268,8 @@ class AstrophQuery:
                         channels.append(k.channel)
 
             if keys_matched:
-                results.append(Paper(arxiv_id, title, url, keys_matched, channels))
+                results.append(
+                    Paper(arxiv_id, title.replace("   ", " "), url, keys_matched, channels))
 
         return results, latest_id, triggered_authors
 
