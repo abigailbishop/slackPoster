@@ -18,13 +18,13 @@ for name, channels in main_dict.items():
      print(name)
 
      # For production
-     os.system('./lazy_astroph.py -w {0}/webhook --channel {1} {0}/inputs'.format(name, channels))
+     os.system('./lazy_astroph.py -w {0}/webhook --channel {1} {0}/inputs --query_email {2}'.format(name, channels, email_addresses[0]))
 
      # For testing on personal slack channel
-     #os.system('./lazy_astroph.py -w test_webhook --channel {1} {0}/inputs -m {2}'.format(name, channels, email_addresses))
-     #os.system('./lazy_astroph.py -w test_webhook --channel {1} {0}/inputs'.format(name, channels))
-     #os.system('./lazy_astroph.py -w abby_webhook --channel {1} {0}/inputs'.format(name, channels))
+     #os.system('./lazy_astroph.py -w test_webhook --channel {1} {0}/inputs -m {2} --query_email {3}'.format(name, channels, email_addresses, email_addresses[0]))
+     #os.system('./lazy_astroph.py -w test_webhook --channel {1} {0}/inputs --query_email {2}'.format(name, channels, email_addresses[0]))
+     #os.system('./lazy_astroph.py -w abby_webhook --channel {1} {0}/inputs --query_email {2}'.format(name, channels, email_addresses[0]))
      #break
      
      # For running without updating param files or posting to Slack
-     #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs'.format(name, channels))
+     #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs --query_email {2}'.format(name, channels, email_addresses[0]))
