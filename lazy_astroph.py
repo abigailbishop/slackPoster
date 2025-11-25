@@ -7,6 +7,7 @@ import datetime as dt
 import json
 import os
 import platform
+import requests
 import shlex
 import smtplib
 import subprocess
@@ -16,12 +17,6 @@ import traceback
 from email.mime.text import MIMEText
 
 import feedparser
-
-# python 2 and 3 do different things with urllib
-try:
-    from urllib.request import urlopen
-except ImportError:
-    from urllib2 import urlopen
 
 
 class Paper:
@@ -145,36 +140,31 @@ class AstrophQuery:
 
         return self.base_url + full_query
 
-    def do_query(self, fave_authors, keywords=None, old_id=None):
+    def do_query(self, fave_authors, query_email, keywords=None, old_id=None):
         """ perform the actual query """
 
         # note, in python3 this will be bytes not str
-        try:
-            response = urlopen(self.get_url()).read()
-        except:
-            # Get email addresses
-            with open('emails.txt', 'r') as emails:
-                email_addresses = [x.strip() for x in emails.readlines()]
-            
-            # Compose Traceback
+        headers = {'User-Agent': f'paperPoster/1.0 ({query_email})'}
+        response = requests.get(self.get_url(), headers=headers, timeout=120)
+        response = requests.get(self.get_url(), timeout=120)
+
+        # Technically any status code in the 200's should be fine but 200 is 
+        # typical for us, so error out if the status code isn't 200
+        if response.status_code != 200: 
             body = "I failed on " + args.w.split('/')[0] + ' : ' + self.arxiv_channel
             body +="\n\n"
             body += traceback.format_exc()
-            
-            # Send emails
-            for email_add in email_addresses:
-                report(body, "Paper Poster FAILED",
-                       "lazy-astroph@{}".format(platform.node()), email_add)
-            
-            raise CompletionError
+            body += "\n\nStatus Code: "
+            body += str(response.status_code)
+            body += "\n\nResponse Text:\n"
+            body += response.text
+            body += "\n\nResponse Content:\n"
+            body += response.content.decode('utf-8')
+            raise CompletionError(body)
 
+        response = response.content
         response = response.replace(b"author", b"contributor")
-
-        # this feedparser magic comes from the example of Julius Lucks / Andrea Zonca
-        # https://github.com/zonca/python-parse-arxiv/blob/master/python_arXiv_parsing_example.py
-        feedparser._FeedParserMixin.namespaces['http://a9.com/-/spec/opensearch/1.1/'] = 'opensearch'
-        feedparser._FeedParserMixin.namespaces['http://arxiv.org/schemas/atom'] = 'arxiv'
-
+        
         feed = feedparser.parse(response)
 
         if feed.feed.opensearch_totalresults == 0:
@@ -307,14 +297,14 @@ def report(body, subject, sender, receiver):
         sys.exit("ERROR sending mail")
 
 
-def search_astroph(keywords, fave_authors, arxiv_channel, old_id=None):
+def search_astroph(keywords, fave_authors, arxiv_channel, query_email,  old_id=None):
     """ do the actual search though astro-ph by first querying astro-ph
         for the latest papers and then looking for keyword matches"""
 
     today = dt.date.today()
     day = dt.timedelta(days=1)
 
-    max_papers = 1000
+    max_papers = 200
 
     # we pick a wide-enough search range to ensure we catch papers
     # if there is a holiday
@@ -327,12 +317,12 @@ def search_astroph(keywords, fave_authors, arxiv_channel, old_id=None):
     #print(q.get_url())
 
     try:
-        papers, last_id, authors = q.do_query(fave_authors, 
+        papers, last_id, authors = q.do_query(fave_authors, query_email,
                                               keywords=keywords, old_id=old_id)
     except CompletionError:
         time.sleep(5)
         try:
-            papers, last_id, authors = q.do_query(fave_authors,
+            papers, last_id, authors = q.do_query(fave_authors, query_email,
                                                   keywords=keywords, old_id=old_id)
         except CompletionError:
             sys.exit()
@@ -489,6 +479,8 @@ def doit():
                         action="store_true")
     parser.add_argument("--channel", type=str, default="astro", 
                         help="Name of arXiv channel that you're searching") 
+    parser.add_argument("--query_email", type=str, required=True,
+                        help="Email address used for arXiv query header") 
     global args 
     args = parser.parse_args()
     
@@ -570,7 +562,8 @@ def doit():
 
         #search the channels
         papers_tmp, last_id_tmp, authors = search_astroph(keywords,fave_authors,
-               arxiv_channel=channels_to_search[channel_n], old_id=old_id)
+               arxiv_channel=channels_to_search[channel_n], 
+               query_email=args.query_email, old_id=old_id)
         for k, v in authors.items():
             all_authors[k] = v
 
