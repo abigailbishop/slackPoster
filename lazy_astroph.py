@@ -104,15 +104,22 @@ class AstrophQuery:
 
         self.subcat = self.subcat_dict[self.arxiv_channel] 
 
-    def get_cat_query(self):
+        self.batch_size = 1  # max subcategories of arXiv per query
+
+    def get_cat_query(self, subcats):
         """ create the category portion of the astro ph query """
 
+        # Remove empty strings
+        subcats = [s for s in subcats if s != '' or self.suffix_dict[self.arxiv_channel].endswith(s)]
+
         cat_query = "%28"  # open parenthesis
-        for n, s in enumerate(self.subcat):
+        for n, s in enumerate(subcats):
             #cat_query += "astro-ph.{}".format(s)
             cat_query += self.arxiv_channel + self.suffix_dict[self.arxiv_channel] + s
             #print(self.subcat)
-            if n < len(self.subcat)-1:
+            if len(subcats) ==1: 
+                cat_query += "%29"  # close parenthesis
+            elif n < len(self.subcat)-1:
                 cat_query += "+OR+"
             else:
                 cat_query += "%29"  # close parenthesis
@@ -128,15 +135,13 @@ class AstrophQuery:
         range_query = "lastUpdatedDate:{}".format(range_str)
         return range_query
 
-    def get_url(self):
+    def get_url(self, subcats):
         """ create the URL we will use to query arXiv """
 
-        cat_query = self.get_cat_query()
+        cat_query = self.get_cat_query(subcats)
         range_query = self.get_range_query()
 
         full_query = "search_query={}+AND+{}&{}".format(cat_query, range_query, self.sort_query)
-
-        print(self.base_url + full_query)
 
         return self.base_url + full_query
 
@@ -145,30 +150,55 @@ class AstrophQuery:
 
         # note, in python3 this will be bytes not str
         headers = {'User-Agent': f'paperPoster/1.0 ({query_email})'}
-        response = requests.get(self.get_url(), headers=headers, timeout=120)
-        response = requests.get(self.get_url(), timeout=120)
 
-        # Technically any status code in the 200's should be fine but 200 is 
-        # typical for us, so error out if the status code isn't 200
-        if response.status_code != 200: 
-            body = "I failed on " + args.w.split('/')[0] + ' : ' + self.arxiv_channel
-            body +="\n\n"
-            body += traceback.format_exc()
-            body += "\n\nStatus Code: "
-            body += str(response.status_code)
-            body += "\n\nResponse Text:\n"
-            body += response.text
-            body += "\n\nResponse Content:\n"
-            body += response.content.decode('utf-8')
-            raise CompletionError(body)
+        # Split subcategories into batches
+        batches = [self.subcat[i:i+self.batch_size]
+            for i in range(0, len(self.subcat), self.batch_size)]
+    
+        all_entries = []
+        seen_ids = set()
 
-        response = response.content
-        response = response.replace(b"author", b"contributor")
-        
-        feed = feedparser.parse(response)
+        for batch_num, batch in enumerate(batches):
+            print(f"  Querying batch {batch_num+1}/{len(batches)}: {batch}")
 
-        if feed.feed.opensearch_totalresults == 0:
-            sys.exit("no results found")
+            url = self.get_url(batch)
+            print(f"  Requesting: {url}")
+            assert '%28' in url and '%29' in url, f"Malformed URL missing parentheses: {url}"
+            response = requests.get(url, headers=headers, timeout=120)
+            print("    Response status code:", response.status_code)
+
+            # If provided with a suggested wait time before retrying, do that
+            if response.status_code == 429:
+                retry_after = int(response.headers.get('Retry-After', 60))
+                print(f"Rate limited. Waiting {retry_after}s...")
+                time.sleep(retry_after)
+                response = requests.get(self.get_url(batch), headers=headers, timeout=120)
+
+            # Technically any status code in the 200's should be fine but 200 is 
+            # typical for us, so error out if the status code isn't 200
+            if response.status_code != 200: 
+                body = "I failed on " + args.w.split('/')[0] + ' : ' + self.arxiv_channel
+                body +="\n\n"
+                body += traceback.format_exc()
+                body += "\n\nStatus Code: "
+                body += str(response.status_code)
+                body += "\n\nResponse Text:\n"
+                body += response.text
+                body += "\n\nResponse Content:\n"
+                body += response.content.decode('utf-8')
+                raise CompletionError(body)
+
+            content = response.content.replace(b"author", b"contributor")
+            feed = feedparser.parse(content)
+
+            for e in feed.entries:
+                arxiv_id = e.id.split("/abs/")[-1]
+                if arxiv_id not in seen_ids:  # deduplicate across batches
+                    seen_ids.add(arxiv_id)
+                    all_entries.append(e)
+
+            if batch_num < len(batches) - 1:
+                time.sleep(5)  # be polite between batch calls
 
         results = []
 
@@ -176,7 +206,7 @@ class AstrophQuery:
 
         triggered_authors = {}     # Collect papers with authors we like
 
-        for e in feed.entries:
+        for e in all_entries:
 
             arxiv_id = e.id.split("/abs/")[-1]
             title = e.title.replace("\n", " ")
@@ -364,14 +394,21 @@ def backup_plan(string):
 
     # run 15 times or until it works
     counter = 0
-    while counter < 15:
+    wait = 60 # seconds
+    while counter < 8:
+        if counter ==1: 
+            print("Struggling to send this string: ")
+            print(string)
         counter += 1
         stdout0, stderr0, rc = run(string)
-
-        if int(rc) == 0: 
-            break
-            
-        time.sleep(120)
+        if counter > 1: 
+            print("stdout", stdout0)
+            print('stderr', stderr0)
+        if int(rc) == 0:
+            return
+        print(f"Attempt {counter} failed, waiting {wait}s before retry...")
+        time.sleep(wait)
+        wait = min(wait * 2, 900) 
     
     # if it worked, we're done
     if int(rc) == 0: return
@@ -407,7 +444,7 @@ def run(string):
 
 
 def slack_post(papers, channel_req, authors, fave_authors, 
-                    username=None, icon_emoji=None, webhook=None):
+               username=None, icon_emoji=None, webhook=None, max_retries=8):
     """ post the information to a slack channel """
 
     # loop by channel
@@ -455,8 +492,35 @@ def slack_post(papers, channel_req, authors, fave_authors,
             payload["icon_emoji"] = icon_emoji
         payload["text"] = channel_body
 
-        cmd = "curl -X POST --data-urlencode 'payload={}' {}".format(json.dumps(payload), webhook)
-        backup_plan(cmd)
+        wait = 60
+        for attempt in range(1, max_retries + 1):
+            try:
+                response = requests.post(
+                    webhook,
+                    json=payload,
+                    timeout=30
+                )
+                if response.status_code == 200:
+                    return
+                else:
+                    print(f"Slack post attempt {attempt} failed with status {response.status_code}: {response.text}")
+            except requests.exceptions.SSLError as e:
+                print(f"SSL error on attempt {attempt}: {e}")
+            except requests.exceptions.RequestException as e:
+                print(f"Request error on attempt {attempt}: {e}")
+
+            if attempt < max_retries:
+                print(f"Waiting {wait} seconds before retry...")
+                time.sleep(wait)
+                wait = min(wait * 2, 900)
+
+        # all retries exhausted
+        body = f"Failed to post to Slack after {max_retries} attempts.\nPayload channel: {payload.get('channel')}"
+        with open('emails.txt', 'r') as f:
+            email_addresses = [x.strip() for x in f.readlines()]
+        for mail in email_addresses:
+            report(body, "Slack post failure", "lazy-astroph@{}".format(platform.node()), mail)
+        sys.exit()
 
 def doit():
     """ the main driver for the lazy-astroph script """
@@ -564,6 +628,11 @@ def doit():
         papers_tmp, last_id_tmp, authors = search_astroph(keywords,fave_authors,
                arxiv_channel=channels_to_search[channel_n], 
                query_email=args.query_email, old_id=old_id)
+        
+        # Delay 5 seconds between category queries
+        if channel_n < len(channels_to_search) - 1:
+            time.sleep(5)
+
         for k, v in authors.items():
             all_authors[k] = v
 
