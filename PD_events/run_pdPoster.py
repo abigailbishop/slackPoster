@@ -4,6 +4,7 @@ from parsers import *
 import sys
 
 with open('webhook', 'r') as webhook_file:
+#with open('webhook_abby', 'r') as webhook_file:
     webhook = str(webhook_file.readline())
 
 events = []
