@@ -34,3 +34,5 @@ for name, channels in main_dict.items():
      
      # For running without updating param files or posting to Slack
      #os.system('./lazy_astroph.py --dry_run --channel {1} {0}/inputs --query_email {2}'.format(name, channels, email_addresses[0]))
+
+     os.system("sleep 15")  # 15 seconds between each channel's API burst
